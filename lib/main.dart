@@ -1,15 +1,93 @@
 import 'package:easy_opener/easy_opener.dart';
+import 'package:eatup/data/shared.dart';
 import 'package:eatup/home/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+final FlutterCarplay _flutterCarplay = FlutterCarplay();
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+
+  @override
+  void initState() {
+    FlutterCarplay.setRootTemplate(
+      rootTemplate: CPGridTemplate(
+        title: "What pizza?",
+        buttons: [
+          ...Data.FoodItems.map(
+            (e) => CPGridButton(
+              titleVariants: [e.name],
+              image: 'assets/images/${e.asset}',
+              onPress: () {
+                showOrderingConfirmationSheet(e);
+                // showActionSheet();
+              },
+            ),
+          )
+        ],
+      ),
+      animated: true,
+    );
+
+    _flutterCarplay
+        .forceUpdateRootTemplate(); // This makes the CarPlay experience reload on hot reload, useful during development.
+
+    // TODO: implement initState
+    super.initState();
+  }
+
+  void showOrderingConfirmationSheet(FoodItem food) {
+    FlutterCarplay.showActionSheet(
+      template: CPActionSheetTemplate(
+        title: "Order ${food.name}?",
+        message: "Your pizza will be ready soon after confirmation.",
+        actions: [
+          CPAlertAction(
+            title: "Cancel",
+            style: CPAlertActionStyles.cancel,
+            onPress: () {
+              // print("Cancel pressed in action sheet");
+              FlutterCarplay.popModal(animated: true);
+            },
+          ),
+          CPAlertAction(
+            title: "Ok",
+            style: CPAlertActionStyles.normal,
+            onPress: () {
+              print("Ok pressed in action sheet");
+              FlutterCarplay.popModal(animated: true);
+              FlutterCarplay.showAlert(
+                  template: CPAlertTemplate(titleVariants: [
+                '${food.name} ordered!'
+              ], actions: [
+                CPAlertAction(
+                  title: "Dismiss",
+                  style: CPAlertActionStyles.destructive,
+                  onPress: () {
+                    print("Dismiss pressed in action sheet");
+                    FlutterCarplay.popModal(animated: true);
+                  },
+                ),
+              ]));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
