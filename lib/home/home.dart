@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
             ),
             Text(
               "Tap on a pizza to immediately order it!",
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Wrap(
               alignment: WrapAlignment.end,
@@ -79,7 +79,7 @@ class HomePage extends StatelessWidget {
                                   color: Colors.white70,
                                   child: AutoSizeText(
                                     e.name,
-                                    style: Theme.of(context).textTheme.headline4,
+                                    style: Theme.of(context).textTheme.headlineMedium,
                                     maxLines: 1,
                                     textAlign: TextAlign.center,
                                   )),
